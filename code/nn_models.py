@@ -26,13 +26,13 @@ def create_cnn_model(embedding_dim, sequence_length, num_filters,
         input = inputs, voc = key_to_indexulary)
     embedding = Reshape((sequence_length, embedding_dim, 1))(embedding_1d)
     conv_0 = Conv2D(num_filters, kernel_size=(filter_sizes[0], embedding_dim),
-     padding='valid', kernel_initializer='normal', activation=param,
+     padding='valid', kernel_initializer='normal', activation='sigmoid',
       kernel_constraint=max_norm(3))(embedding)
     conv_1 = Conv2D(num_filters, kernel_size=(filter_sizes[1], embedding_dim),
-     padding='valid', kernel_initializer='normal', activation=param,
+     padding='valid', kernel_initializer='normal', activation='sigmoid',
       kernel_constraint=max_norm(3))(embedding)
     conv_2 = Conv2D(num_filters, kernel_size=(filter_sizes[2], embedding_dim),
-     padding='valid', kernel_initializer='normal', activation=param,
+     padding='valid', kernel_initializer='normal', activation='sigmoid',
       kernel_constraint=max_norm(3))(embedding)
 
     maxpool_0 = MaxPool2D(pool_size=(sequence_length - filter_sizes[0] + 1,1),
@@ -126,7 +126,7 @@ def save_model(model, filename):
     print("Model Saved")
 
 
-def restore_model(filename = 'cnnF-500_dT-csv_bS-32_E-10_sL-100_aT-0.05_iL-False_lR-0.001'):
+def restore_model(filename = 'cnnF-512_dT-csv_bS-32_E-1_sL-200_lR-0.001_param-relu'):
     # file = open(os.path.join(filename, '.json') , 'r')
     file = open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
     '../models', filename + '.json') , 'r')

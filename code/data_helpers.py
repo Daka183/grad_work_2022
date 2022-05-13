@@ -29,6 +29,11 @@ def get_process_data (dataset, data_type, mode):
         y_train = y_train_1 + '/' + y_train_2
         y_test = y_test_1 + '/' + y_test_2
 
+        label_dir_save_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'resources')
+        if not os.path.exists(label_dir_save_path):
+            os.makedirs(label_dir_save_path)
+        y_test.to_csv(os.path.join(os.path.dirname(__file__), '../resources', 'y_test.csv'))
+
         X_train = preprocessing_data(X_train, data_type)
         X_test = preprocessing_data(X_test, data_type)
  

@@ -85,14 +85,15 @@ def test(model, X_test, y_test, y_test_1, y_test_2):
     print("Testing Model...")
 
     y_pred = model.predict(X_test, batch_size = args.batch_size)
-    y_pred = np.argmax(y_pred, axis = 1)
-    y_test = np.argmax(y_test, axis = 1)
+    y_pred = pd.Series(np.argmax(y_pred, axis = 1), name='join_column') 
+    y_test = pd.Series(np.argmax(y_test, axis = 1), name='join_column') 
 
-    # pred = pd.DataFrame(y_pred).idxmax(axis=1)
-    pred = pd.Series(y_pred, name='join_column')
-    labels = pd.read_csv(os.path.join(os.path.dirname(__file__), '../resources', 'labels_train.csv'))
-    results = labels.merge(pred, on='join_column', how='right')
+    y_test_name = pd.read_csv(os.path.join(os.path.dirname(__file__), '../resources', 'y_test.csv'), names=['classes'])
+    y_test_concat = pd.concat([y_test, y_test_name], axis=1)[['join_column', 'classes']]
+    y_test_concat = y_test_concat.drop_duplicates()
+    results = y_test_concat.merge(y_pred, on='join_column', how='right')
     split_data = results['classes'].str.split('/', expand=True)
+    y_test_concat.to_csv(os.path.join(os.path.dirname(__file__), '../resources', 'y_test_concat.csv'))
 
     y_pred_1 = split_data[0]
     y_pred_2 = split_data[1]
@@ -111,6 +112,7 @@ def test(model, X_test, y_test, y_test_1, y_test_2):
     # pd.DataFrame(y_pred_1).to_excel(writer, sheet_name='y_pred_1')
     # pd.DataFrame(y_test_2).to_excel(writer, sheet_name='y_test_2')
     # pd.DataFrame(y_pred_2).to_excel(writer, sheet_name='y_pred_2')
+    # pd.DataFrame(results).to_excel(writer, sheet_name='results')
     # writer.save()
 
     return [res_1, res_2, res_3]
@@ -162,7 +164,7 @@ def run():
 
     elif args.mode == 'research':
 
-        params = ['relu', 'sigmoid', 'softmax', 'softplus', 'tanh', 'selu', 'elu', 'exponential']
+        params = ['relu']
         results = np.zeros((3,3))
 
         research_dir_save_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'research')
@@ -197,12 +199,9 @@ def run():
 
         print("Get results")
         pred = model.predict(X_real, batch_size = args.batch_size)
-        # pred = np.argmax(pred, axis = 1)
-        
-        pred = pd.DataFrame(pred).idxmax(axis=1)
-        pred = pd.Series(pred, name='join_column')
-        labels = pd.read_csv(os.path.join(os.path.dirname(__file__), '../resources', 'labels_train.csv'))
-        results = labels.merge(pred, on='join_column', how='right')
+        pred = pd.Series(np.argmax(pred, axis = 1), name='join_column') 
+        y_test_concat = pd.read_csv(os.path.join(os.path.dirname(__file__), '../resources', 'y_test_concat.csv'))
+        results = y_test_concat.merge(pred, on='join_column', how='right')
         split_data = results['classes'].str.split('/', expand=True)
 
         messages = pd.read_csv('C:/Users/aslop/Downloads/data_in_csv/real_data.csv')
@@ -223,8 +222,9 @@ def run():
 
 
 def create_model(param=None):
-    general_name = ("_dT-" + str(args.data_type)+ "_bS-" + str(args.batch_size) + 
-    "_E-" + str(args.epochs) + "_sL-" + str(args.seq_len) + "_lR-" + str(args.lr_rate))
+    general_name = ("_dT-" + str(args.data_type)+ "_bS-" + str(args.batch_size) 
+    + "_E-" + str(args.epochs) + "_sL-" + str(args.seq_len) + "_lR-" + str(args.lr_rate)
+    + "_param-" + param)
     if args.network == 'lstm':
         args.filename = ('lstmU-' + str(args.lstm_units) + general_name)
         model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
