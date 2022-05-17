@@ -118,7 +118,7 @@ def main():
     global args
     parser = argparse.ArgumentParser()
     parser.add_argument('--text', nargs='+', default=None, help='Input message')
-    parser.add_argument('--lang', type=str, default='english', choices=['russian','english'], help='Language')
+    parser.add_argument('--lang', type=str, default='russian', choices=['russian','english'], help='Language')
     parser.add_argument('--mode', type=str, default='train_test', choices=['research', 'train_test', 'check_real_data'], help='Mode of the program')
     parser.add_argument('--data_type', type=str, default='csv', choices=['csv','cmd'], help='Data type')
     parser.add_argument('--batch_size', type=int, default=32, help = 'Batch size')
