@@ -1,0 +1,21 @@
+import pandas as pd
+from os.path import join
+from sklearn.utils import shuffle
+from sklearn.model_selection import train_test_split
+
+class Loader():
+
+    def load_data_csv(self, mode, lang):
+            
+        path = 'C:/Program Files/Python39/Letters/'
+        if lang == 'russian':
+            df = pd.read_csv(join(path, 'letter_dataset.csv'))
+            df = df.drop(df[df['Letter'].str.len() < 2].index)
+            train = df.sample(frac=0.8, random_state=42).reset_index()
+            test = df.drop(train.index).reset_index()
+            real_data = df.iloc[:20, :].reset_index()
+
+        if mode != 'check_real_data':
+            return train, test
+        else:
+            return real_data
